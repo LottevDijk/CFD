@@ -1,0 +1,21 @@
+function [] = fixedbound()
+% Purpose: Specify boundary conditions for a calculation
+
+% constants
+global NPI NPJ ALPHAIN IinLeft IinRight 
+% variables
+global u v T Alpha U_IN
+
+u(2,1:NPJ+2) = 0.;       %inlet mixture velocity
+u(NPI+2,1:NPJ+2) = 0.;   %outlet mixture velocity
+
+% Temperature at the walls in Kelvin
+T(1:NPI+2,1) = 273.;     % top wall
+T(1:NPI+2,NPJ+2) = 273.; % bottom wall
+% T(1,1:NPJ+2) = 373.;     %inlet wall
+
+for J = round(IinLeft*NPJ) : round(IinRight*NPJ)
+    Alpha(1,J) = ALPHAIN; %inlet gas fraction left
+end
+
+end
