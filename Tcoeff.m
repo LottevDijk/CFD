@@ -48,9 +48,6 @@ for I = Istart:Iend
         
         % The source terms
         SP(I,J) = 0.;
-        if (i >8&& I<12 && J > 18 &&J<22) 
-            SP(i,J) = -LARGE;
-        end 
         Su(I,J) = 0.;
         
         % The coefficients (hybrid differencing scheme)
