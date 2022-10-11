@@ -16,14 +16,17 @@ clc
 % variables
 global  x y u v pc T rho Gamma b SMAX SAVG aP aE aW aN aS Dt Alpha rho_old Cp  current_time NDt d_u d_v
 % constants
-global NPI NPJ XMAX YMAX LARGE U_IN SMALL Cdrag RHOL RHOG USLIP ALPHAIN CZERO BIT CMUBIT DBUB ...
+global NPI NPJ XMAX YMAX XMM YMM DMM LARGE U_IN SMALL Cdrag RHOL RHOG USLIP ALPHAIN CZERO BIT CMUBIT DBUB ...
     NU NV NPC NT NALPHA NP NMU NRHO NGAMMA NFIMAX TOTAL_TIME TOTAL_DUMPS solve_fi IinLeft IinRight
 
 
-NPI        = 90;       % number of grid cells in x-direction [-]
-NPJ        = 40;        % number of grid cells in y-direction [-]
-XMAX       = 0.45;       % width of the domain [m]
-YMAX       = 0.2;       % height of the domain [m]
+NPI        = 50;       % number of grid cells in x-direction [-]
+NPJ        = 50;        % number of grid cells in y-direction [-]
+XMAX       = 0.50;       % width of the domain [m]
+YMAX       = 0.50;       % height of the domain [m]
+XMM        = 0.05;      % width of marshmellow [m]
+YMM        = 0.03;      % height of marshmellow [m]
+DMM        = 0.20;      % distance of marshmellow to table [m]
 MAX_ITER   = 1;        % maximum number of outer iterations [-]
 U_ITER     = 5;        % number of Newton iterations for u equation [-]
 V_ITER     = 5;         % number of Newton iterations for v equation [-]
@@ -42,8 +45,8 @@ RHOL       = 1000.;      % density of liquid [kg/m3]
 RHOG       = 1.2;        % density of gas [kg/m3]
 USLIP      = 0.2;        % slip velocity [m/s]
 ALPHAIN    = 0.05;        % gas fraction at inlet [-]
-IinLeft    = 0.44;       % relative location left side inlet
-IinRight   = 0.56;       % relative location right side inlet
+IinLeft    = 0.45;       % relative location left side inlet
+IinRight   = 0.55;       % relative location right side inlet
 CZERO      = 0.1;
 BIT        = 1;
 CMUBIT     = 0.5;
@@ -67,7 +70,7 @@ TOTAL_TIME = 10.;        % total time
 
 %% start main function here
 init(); % initialization
-fixedbound(); % set boundary values that remain untouched during the iteration process
+bound(); % set boundary values that remain untouched during the iteration process
 NDt = 0;
 for current_time = Dt:Dt:TOTAL_TIME
     iter = 0;
@@ -149,6 +152,8 @@ for current_time = Dt:Dt:TOTAL_TIME
 if mod(current_time,.5) <= 0.01 
     Frame = figure (1)
     pcolor(x,y,Alpha');
+    colorbar;
+%     quiver(x,y,u',v');
     fileLocation = "D:\MW courses\1 - 4RM00 - Introduction to computational fluid dynamics\wc5\Images";
     fileName = sprintf('image%d.png',current_time);
     plotName = strcat(fileLocation,fileName); 

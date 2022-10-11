@@ -2,7 +2,7 @@ function [] = vcoeff()
 % Purpose: To calculate the coefficients for the v equation.
 
 % constants
-global NPI NPJ  Dt NV
+global NPI NPJ  Dt NV LARGE XMAX YMAX XMM YMM DMM
 % variables
 global x x_u y y_v v p mu SP Su F_u F_v d_v relax v_old Istart Iend ...
     Jstart Jend b aE aW aN aS aP dvdy dudy rho_old
@@ -46,6 +46,15 @@ for I = Istart:Iend
         Su(I,j) = (mu(I,J)*dvdy(I,J) - mu(I,J-1)*dvdy(I,J-1)) / (y(J) - y(J-1)) + ...
                     (mue*dudy(i+1,j) - muw*dudy(i,j)) / (x_u(i+1) - x_u(i));
         Su(i,J) =  Su(i,J)*AREAw*AREAs;
+        
+        %marshmellow placement
+%         if any(i == round(DMM/XMAX*NPI) : round((DMM+XMM)/XMAX*NPI))
+%             if any(J == round((YMAX/2-YMM/2)/YMAX*NPJ):round((YMAX/2+YMM/2)/YMAX*NPJ))
+%                 SP(i,J) = -LARGE;
+%                 Su(i,J) = 0;
+%             end
+%         end
+        
         
         % The coefficients (hybrid differencing scheme)
         aW(I,j) = max([ Fw, Dw + Fw/2, 0.]);

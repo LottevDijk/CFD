@@ -2,7 +2,7 @@ function [] = Alphacoeff()
 % Purpose: To calculate the coefficients for the Alpha equation.
 
 % constants
-global NPI NPJ  Dt NALPHA RHOL USLIP IinRight IinLeft U_IN
+global NPI NPJ  Dt NALPHA RHOL USLIP IinRight IinLeft U_IN LARGE XMAX YMAX XMM YMM DMM
 % variables
 global  x_u u v y_v SP Su  relax Alpha_old Alpha Istart Iend  rho ...
     Jstart Jend b aE aW aN aS aP 
@@ -35,13 +35,21 @@ for I = Istart:Iend
           Fs = v(I,j)*AREAs;
           Fn = v(I,j+1)*AREAn;
         
-         if I == 2 && J>=round(IinLeft*NPJ) && J<= round(IinRight*NPJ)
-              Fw = U_IN*AREAw;
-         end
+%          if I == 2 && J>=round(IinLeft*NPJ) && J<= round(IinRight*NPJ)
+%               Fw = U_IN*AREAw;
+%          end
 
         % The source terms
         SP(I,J) = 0.;
         Su(I,J) = 0.;
+        
+        %marshmellow placement
+%         if any(i == round(DMM/XMAX*NPI) : round((DMM+XMM)/XMAX*NPI))
+%             if any(J == round((YMAX/2-YMM/2)/YMAX*NPJ):round((YMAX/2+YMM/2)/YMAX*NPJ))
+%                 SP(i,J) = -LARGE;
+%                 Su(i,J) = 0;
+%             end
+%         end
         
         % The coefficients (hybrid differencing scheme)
         aW(I,j) = max(Fw, 0.);
