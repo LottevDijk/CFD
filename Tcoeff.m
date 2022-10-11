@@ -2,7 +2,7 @@ function [] = Tcoeff()
 % Purpose: To calculate the coefficients for the T equation.
 
 % constants
-global NPI NPJ LARGE Dt NT
+global NPI NPJ LARGE Dt NT LARGE
 % variables
 global x x_u y y_v T Gamma SP Su F_u F_v relax T_old rho_old Istart Iend ...
     Jstart Jend b aE aW aN aS aP 
@@ -48,6 +48,9 @@ for I = Istart:Iend
         
         % The source terms
         SP(I,J) = 0.;
+        if (i >8&& I<12 && J > 18 &&J<22) 
+            SP(i,J) = -LARGE;
+        end 
         Su(I,J) = 0.;
         
         % The coefficients (hybrid differencing scheme)
