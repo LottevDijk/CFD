@@ -2,7 +2,7 @@ function [] = Alphacoeff()
 % Purpose: To calculate the coefficients for the Alpha equation.
 
 % constants
-global NPI NPJ  Dt NALPHA RHOL USLIP IinRight IinLeft U_IN LARGE XMAX YMAX XMM YMM DMM LARGE
+global NPI NPJ  Dt NALPHA RHOL USLIP IinRight IinLeft ImarshLeft ImasrhRight Jmarshlow Jmarshhigh U_IN LARGE XMAX YMAX XMM YMM DMM LARGE
 % variables
 global  x_u u v y_v SP Su  relax Alpha_old Alpha Istart Iend  rho ...
     Jstart Jend b aE aW aN aS aP 
@@ -41,7 +41,7 @@ for I = Istart:Iend
 
         % The source terms
         SP(I,J) = 0.;
-        if (i >8&& I<12 && J > 18 &&J<22) 
+        if (i >ImarshLeft&& I<ImarshRight && J > Jmarshlow &&J<Jmarshhigh) 
             SP(i,J) = -LARGE;
         end 
         Su(I,J) = 0.;
