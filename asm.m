@@ -21,6 +21,8 @@ global NPI NPJ XMAX YMAX XMM YMM DMM LARGE U_IN SMALL Cdrag RHOL RHOG USLIP ALPH
 
 
 NPI        = 50;       % number of grid cells in x-direction [-]
+Ilow       =23/50;
+Ihigh      =27/50;
 NPJ        = 50;        % number of grid cells in y-direction [-]
 XMAX       = 0.50;       % width of the domain [m]
 YMAX       = 0.50;       % height of the domain [m]
