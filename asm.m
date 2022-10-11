@@ -35,7 +35,7 @@ SAVGneeded = 1E-6;      % maximum accepted average error in mass balance [kg/s]
 LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
-U_IN       = 0.096;      % in flow velocity [m/s]
+U_IN       = 0.4;      % in flow velocity [m/s]
 Cdrag      = 50E3;
 
 RHOL       = 1000.;      % density of liquid [kg/m3]
