@@ -48,12 +48,12 @@ for I = Istart:Iend
         Su(i,J) =  Su(i,J)*AREAw*AREAs;
         
         %marshmellow placement
-%         if any(i == round(DMM/XMAX*NPI) : round((DMM+XMM)/XMAX*NPI))
-%             if any(J == round((YMAX/2-YMM/2)/YMAX*NPJ):round((YMAX/2+YMM/2)/YMAX*NPJ))
-%                 SP(i,J) = -LARGE;
-%                 Su(i,J) = 0;
-%             end
-%         end
+        if any(i == round(DMM/XMAX*NPI) : round((DMM+XMM)/XMAX*NPI))
+            if any(J == round((YMAX/2-YMM/2)/YMAX*NPJ):round((YMAX/2+YMM/2)/YMAX*NPJ))
+                SP(i,J) = -LARGE;
+                Su(i,J) = 0;
+            end
+        end
         
         
         % The coefficients (hybrid differencing scheme)
