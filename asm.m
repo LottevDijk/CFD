@@ -194,7 +194,7 @@ hold on
 plot(x/XMAX,v(:,NPJ+2))
 plot(y/YMAX,u(NPI+2,:))
 plot(x/XMAX,-v(:,2))
-legend('outlet right','outlet top', 'outlet bottom')
+legend('outlet top','outlet right', 'outlet bottom')
 title('outlet velocity to outside of domain')
 % figure(3)
 % pcolor(x,y,T');
