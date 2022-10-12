@@ -14,13 +14,16 @@ T(1:NPI+2,NPJ+2) = 273.; % bottom wall
 
 % top and bottom outlet boundary
 for I = 1:NPI
+    u(I,1) = u(I,2);
     v(I,1) = v(I,2);
-    v(I,NPJ+2) = v(I,NPJ+2);
+    u(I,NPJ+2) = u(I,NPJ+1);
+    v(I,NPJ+2) = v(I,NPJ+1);
 end
 
 % right outlet boundary
 for J = 1:NPJ+2
-    u(NPI+2,J) = u(NPI+1,J);
+    u(NPI+2,J) = 0*u(NPI+1,J);
+    v(NPI+2,J) = 0*v(NPI+1,J);
 end
 
 % wall surrounding inlet boundary

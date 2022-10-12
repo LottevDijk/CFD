@@ -24,7 +24,7 @@ NPI        = 50;       % number of grid cells in x-direction [-]
 NPJ        = 50;        % number of grid cells in y-direction [-]
 XMAX       = 0.50;       % width of the domain [m]
 YMAX       = 0.50;       % height of the domain [m]
-XMM        = 0.05;      % width of marshmellow [m]
+XMM        = 0.15;      % width of marshmellow [m]
 YMM        = 0.03;      % height of marshmellow [m]
 DMM        = 0.20;      % distance of marshmellow to table [m]
 MAX_ITER   = 1;        % maximum number of outer iterations [-]
@@ -151,9 +151,9 @@ for current_time = Dt:Dt:TOTAL_TIME
 %Make snaps allong time
 if mod(current_time,.5) <= 0.01 
     Frame = figure (1)
-    pcolor(x,y,Alpha');
-    colorbar;
-%     quiver(x,y,u',v');
+%     pcolor(x,y,Alpha');
+%     colorbar;
+    quiver(x,y,u',v');
     fileLocation = "D:\MW courses\1 - 4RM00 - Introduction to computational fluid dynamics\wc5\Images";
     fileName = sprintf('image%d.png',current_time);
     plotName = strcat(fileLocation,fileName); 
@@ -190,7 +190,12 @@ quiver(x,y,u',v');
 figure(2)
 pcolor(x,y,Alpha');
 figure(3)
-plot(y,u(NPI+2,:))
+hold on
+plot(x/XMAX,v(:,NPJ+2))
+plot(y/YMAX,u(NPI+2,:))
+plot(x/XMAX,-v(:,2))
+legend('outlet right','outlet top', 'outlet bottom')
+title('outlet velocity to outside of domain')
 % figure(3)
 % pcolor(x,y,T');
 
