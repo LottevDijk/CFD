@@ -4,8 +4,8 @@ function [] = pccoeff()
 % constants
 global NPI NPJ Dt
 % variables
-global x_u y_v pc rho SP Su F_u F_v d_u d_v Istart Iend Jstart Jend ...
-    b aE aW aN aS aP SMAX SAVG rho_old
+global x_u y_v pc rho rho_old SP Su F_u F_v d_u d_v Istart Iend Jstart Jend ...
+    b aE aW aN aS aP SMAX SAVG
 
 Istart = 2;
 Iend = NPI+1;
@@ -21,7 +21,7 @@ convect();
 for I = Istart:Iend
     i = I;
     for J = Jstart:Jend
-        j = J;        
+        j = J;      
         % Geometrical parameters: Areas of the cell faces
         AREAw = y_v(j+1) - y_v(j); % = A(i,J) See fig. 6.2 or fig. 6.5
         AREAe = AREAw;
@@ -59,5 +59,5 @@ for I = Istart:Iend
 end
 % Average error in mass balance is summed error divided by number of internal grid points
 SAVG = SSUM/((Iend - Istart)*(Jend - Jstart));
-end
 
+end

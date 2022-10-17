@@ -2,15 +2,15 @@ function [] = velcorr()
 % To correct the pressure and the velocities by eq. 6.24, 6.25 and a modified version of eq. 6.33.
 
 % constants
-global NPI NPJ NPC
+global NPI NPJ
 % variables
-global u v pc p d_u d_v relax
+global u v pc p d_u d_v relax_pc
 
 for I = 2:NPI+1
     i = I;
     for J = 2:NPJ+1
-        j = J;        
-        p(I,J) = p(I,J) + relax(NPC)*pc(I,J); % equation 6.33
+        j = J;
+        p(I,J) = p(I,J) + relax_pc*pc(I,J); % equation 6.33
         
         % Velocity correction
         % Note: the relaxation factors for u and v are included in the d_u and d_v terms (see page 146)

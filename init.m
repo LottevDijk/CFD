@@ -2,15 +2,14 @@ function [] = init()
 % Purpose: To initilise all parameters.
 
 % constants
-global NPI NPJ LARGE XMAX YMAX Jinmin Jinmax Joutmin Joutmax TOTAL_DUMPS...
-       NU NV NALPHA NT NPC NMU NRHO NFIMAX TOTAL_TIME Dt DELTA RHOL RHOG DUMPFREQ
+global NPI NPJ LARGE U_IN XMAX YMAX XMM YMM DMM JinLeft JinRight
 % variables
-global x x_u y y_v u v pc p T rho mu Gamma Cp b SP Su d_u d_v omega ...
-    SMAX SAVG m_in m_out aP aE aW aN aS F_u F_v u_old v_old pc_old T_old  ...
-    dudx dudy dvdx dvdy Alpha rho_old Alpha_old usum vsum psum rhosum ...
-    alphasum musum umean vmean pmean rhomean alphamean mumean relax solve_fi print_fi NGAMMA
+global x x_u y y_v u v pc p T rho mu mut mueff Gamma Cp k eps delta E E2 yplus yplus1 ...
+    yplus2 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
+    relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old pc_old T_old rho_old k_old ...
+    eps_old dudx dudy dvdx dvdy f f_old relax_f Diff
 
-%% begin: memalloc()
+% begin: memalloc()========================================================
 % allocate memory for variables
 x   = zeros(1,NPI+2);
 x_u = zeros(1,NPI+2);
@@ -24,30 +23,29 @@ p   = zeros(NPI+2,NPJ+2);
 T   = zeros(NPI+2,NPJ+2);
 rho = zeros(NPI+2,NPJ+2);
 mu  = zeros(NPI+2,NPJ+2);
+mut  = zeros(NPI+2,NPJ+2);
+mueff  = zeros(NPI+2,NPJ+2);
 Gamma = zeros(NPI+2,NPJ+2);
 Cp  = zeros(NPI+2,NPJ+2);
-Alpha = zeros(NPI+2,NPJ+2);
+Diff  = zeros(NPI+2,NPJ+2); 
+k  = zeros(NPI+2,NPJ+2);
+eps  = zeros(NPI+2,NPJ+2);
+delta  = zeros(NPI+2,NPJ+2);
+E  = zeros(NPI+2,NPJ+2);
+E2  = zeros(NPI+2,NPJ+2);
+yplus  = zeros(NPI+2,NPJ+2);
+yplus1  = zeros(NPI+2,NPJ+2);
+yplus2  = zeros(NPI+2,NPJ+2);
+uplus  = zeros(NPI+2,NPJ+2);
+tw  = zeros(NPI+2,NPJ+2);
 
 u_old  = zeros(NPI+2,NPJ+2);
 v_old  = zeros(NPI+2,NPJ+2);
 pc_old = zeros(NPI+2,NPJ+2);
 T_old  = zeros(NPI+2,NPJ+2);
-rho_old  = zeros(NPI+2,NPJ+2);
-Alpha_old  = zeros(NPI+2,NPJ+2);
-
-usum = zeros(NPI+2,NPJ+2);
-vsum = zeros(NPI+2,NPJ+2);
-psum = zeros(NPI+2,NPJ+2);
-rhosum = zeros(NPI+2,NPJ+2);
-musum = zeros(NPI+2,NPJ+2);
-alphasum = zeros(NPI+2,NPJ+2);
-
-umean = zeros(NPI+2,NPJ+2);
-vmean = zeros(NPI+2,NPJ+2);
-pmean = zeros(NPI+2,NPJ+2);
-rhomean = zeros(NPI+2,NPJ+2);
-mumean = zeros(NPI+2,NPJ+2);
-alphamean = zeros(NPI+2,NPJ+2);
+rho_old = zeros(NPI+2,NPJ+2);
+k_old  = zeros(NPI+2,NPJ+2);
+eps_old  = zeros(NPI+2,NPJ+2);
 
 dudx   = zeros(NPI+2,NPJ+2);
 dudy   = zeros(NPI+2,NPJ+2);
@@ -60,25 +58,25 @@ aW  = zeros(NPI+2,NPJ+2);
 aN  = zeros(NPI+2,NPJ+2);
 aS  = zeros(NPI+2,NPJ+2);
 b   = zeros(NPI+2,NPJ+2);
+
 SP  = zeros(NPI+2,NPJ+2);
 Su  = zeros(NPI+2,NPJ+2);
 
 F_u = zeros(NPI+2,NPJ+2);
 F_v = zeros(NPI+2,NPJ+2);
+
 d_u = zeros(NPI+2,NPJ+2);
 d_v = zeros(NPI+2,NPJ+2);
 
-relax = zeros(1,NFIMAX+1);
-solve_fi = zeros(1,NFIMAX+1);
-print_fi = zeros(1,NFIMAX+1);
-% end of memory allocation
+f     = zeros(NPI+2,NPJ+2);
+f_old = zeros(NPI+2,NPJ+2);
+% end of memory allocation=================================================
 
-%% begin: grid()
+% begin: grid()===========================================================
 % Purpose: Defining the geometrical variables See fig. 6.2-6.4 in ref. 1
 % Length of volume element
 Dx = XMAX/NPI;
 Dy = YMAX/NPJ;
-DELTA = sqrt(Dx*Dy);
 
 % Length variable for the scalar points in the x direction
 x(1) = 0.;
@@ -103,23 +101,15 @@ for i = 3:NPI+2
     x_u(i) = x_u(i-1) + Dx;
 end
 
-% Length variable for the velocity components v(i,j) in the y direction */
+% Length variable for the velocity components v(i,j) in the y direction 
 y_v(1) = 0.;
 y_v(2) = 0.;
 for j = 3:NPJ+2
     y_v(j) = y_v(j-1) + Dy;
 end
-% end of grid setting
+% end of grid setting======================================================
 
-%% begin: gridbound()
-% Purpose: Definding the geometrical boundary coordinates
-Jinmin   = 2;
-Jinmax   = NPJ+1;
-Joutmin  = 2;
-Joutmax  = NPJ+1;
-% end of gridbound setting
-
-%% begin: init()
+% begin: init()===========================================================
 % Initialising all other variables
 omega = 1.0; % Over-relaxation factor for SOR solver
 
@@ -130,65 +120,45 @@ SAVG = LARGE;
 m_in  = 1.;
 m_out = 1.;
 
-% calculate dumpfrequency [1/timesteps], minimum dumpfrequency is equal to 1
-DUMPFREQ = max(round( TOTAL_TIME/(Dt*TOTAL_DUMPS)), 1);
-
-u(:,:)     = 0.;       % velocity in x-direction
-v(:,:)     = 0.;       % Velocity in y-direction
-T(:,:)     = 273.;     % Temperature
-Alpha(:,:) = 0.;       % Gas fraction
-rho(:,:)   = (1 - Alpha)*RHOL + Alpha*RHOG;  % Density: mixture of liquid and gas
-pc(:,:)    = 0.;       % Pressure correction (equivalent to p´ in ref. 1). 
-mu(:,:)    = 1.E-3;    % Liquid viscosity
-Cp(:,:)    = 1013.;    % J/(K*kg) Heat capacity - assumed constant for this problem
-Gamma      = 0.0315./Cp; % Thermal conductivity divided by heat capacity
-d_u(:,:)   = 0.;       % Variable d to calculate pc defined in 6.23 
-d_v(:,:)   = 0.;       % Variable d to calculate pc defined in 6.23 
-b(:,:)     = 0.;	   % The general constant 
-SP(:,:)    = 0.;       % Source term 
-Su(:,:)    = 0.;	   % Source term 
-u_old      = u;         % Velocity in x-direction old timestep
-v_old      = v;         % Velocity in y-direction old timestep
-pc_old     = pc;        % Pressure correction old timestep
-T_old      = T;         % Temperature old timestep
-rho_old    = rho;       % density old timestep
-Alpha_old(:,:)  = 0.;   % gas fraction old timestep
-
-for I = 1: NPI+2
-    for J = 1:NPJ+2
-        p(I,J)     = rho(I,J)*9.81*(NPI-I)/NPI*XMAX;      % relative pressure
+for i = 1: NPI+2
+    for J = round(JinLeft*(NPJ+2)):round(JinRight*(NPJ+2))
+        u(i,J) = 0;%U_IN*1.5*(1.0-(2.0*(y(J)-YMAX/2)/YMAX)^2); % Velocity in x-direction
     end
 end
 
-if (solve_fi(NU))
-% 		 u(Joutmin:Joutmax,NPJ) = U_IN/1000;
-         u(NPI,Joutmin:Joutmax) = 0.;
-end
-% Important to avoid crash!! Othervise m_out calculated in subroutine globcont 
-% would be zero at first iteration=>m_in/m_out =INF
-		
+v(:,:)     = 0.;       % Velocity in y-direction
+p(:,:)     = 0.;       % Relative pressure
+T(:,:)     = 273.;     % Temperature
+rho(:,:)   = 1.0;      % Density
+mu(:,:)    = 2.E-5;    % Viscosity
+Cp(:,:)    = 1013.;    % J/(K*kg) Heat capacity - assumed constant for this problem
+Gamma      = 0.025./Cp;% Thermal conductivity divided by heat capacity
+Diff(:,:)  = 1.76e-5;  % Mass diffusion coefficient [m^2/s]
+k(:,:)     = 1e-3;     % k
+eps(:,:)   = 1e-4;     % epsilon
+uplus(:,:) = 1.;       % uplus
+yplus1(:,:)= sqrt(rho .* u ./ mu) * (y(2) - y(1));   % yplus1
+yplus2(:,:)= sqrt(rho .* u ./ mu) * (y(NPJ+2) - y(NPJ+1));  % yplus2
+yplus(:,:) = 1.;       % yplus
+tw(:,:)    = 5.;       % tw
 
-% Initialising the logical parameter for which variable fi to solve and to print results for 
-solve_fi(1:NFIMAX) = 0; 
-print_fi(1:NFIMAX) = 1;
-solve_fi(NU)       = 1;
-solve_fi(NV)       = 1;
-solve_fi(NPC)      = 1;
-solve_fi(NALPHA)   = 1;
-solve_fi(NRHO)     = 1;
-solve_fi(NMU)      = 1;
-% solve_fi(NT)       = 1;
-% solve_fi(NGAMMA)   = 1;
+f(:,:)     = 1.;       % Initial field mixture fraction
+f_old(:,:) = f;        % mixture fraction old timestep
 
+u_old      = u;        % Velocity in x-direction old timestep
+v_old      = v;        % Velocity in y-direction old timestep
+pc_old     = pc;       % Pressure correction old timestep
+T_old      = T;        % Temperature old timestep
+rho_old(:,:) = 1.0;    % Density old
+eps_old    = eps;      % epsilon old timestep
+k_old      = k;        % k old timestep
 
 % Setting the relaxation parameters
-relax(NU)   = 0.8;              % See eq. 6.36
-relax(NV)   = relax(NU);        % See eq. 6.37
-relax(NPC)  = 1.1 - relax(NU);  % See eq. 6.33
-relax(NT)   = 1.0;              % Relaxation factor for temperature
-relax(NRHO) = 0.1;              % Relaxation factor for density
-relax(NALPHA) = 0.25;           % Relaxation factor gas volume fraction
-
-% end of initilization
+relax_u   = 0.8;            % See eq. 6.36
+relax_v   = relax_u;        % See eq. 6.37
+relax_pc  = 1.1 - relax_u;  % See eq. 6.33
+relax_T   = 1.0;            % Relaxation factor for temperature
+relax_f   = 1.0;            % Relaxation factor for mixture fraction
+% end of initilization=====================================================
 end
 

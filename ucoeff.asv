@@ -2,7 +2,7 @@ function [] = ucoeff()
 % Purpose: To calculate the coefficients for the u equation.
 
 % constants
-global NPI NPJ Dt Cmu XMAX YMAX XMM YMM DMM LARGE
+global NPI NPJ Dt Cmu XMAX YMAX XMM YMM DMM
 % variables
 global x x_u y y_v u p mu mueff SP Su F_u F_v d_u relax_u u_old rho Istart Iend ...
     Jstart Jend b aE aW aN aS aP yplus uplus k dudx dvdx
@@ -53,7 +53,8 @@ for I = Istart:Iend
         end
         
         Su(i,J) = (mueff(I,J)*dudx(I,J) - mueff(I-1,J)*dudx(I-1,J)) / (x(I) - x(I-1)) + ...
-            (mun*dvdx(i,j+1) - mus*dvdx(i,j)) / (y_v(j+1) - y_v(j));
+            (mun*dvdx(i,j+1) - mus*dvdx(i,j)) / (y_v(j+1) - y_v(j)) - ...
+            2./3. * (rho(I,J)*k(I,J) - rho(I-1,J)*k(I-1,J))/(x(I) - x(I-1));
         Su(i,J) =  Su(i,J)*AREAw*AREAs;
         
         %marshmellow placement
