@@ -120,11 +120,13 @@ SAVG = LARGE;
 m_in  = 1.;
 m_out = 1.;
 
-for i = 1: NPI+2
-    for J = round(JinLeft*(NPJ+2)):round(JinRight*(NPJ+2))
-        u(i,J) = 0;%U_IN*1.5*(1.0-(2.0*(y(J)-YMAX/2)/YMAX)^2); % Velocity in x-direction
+for i = 2: NPI+2
+    for J = 2:NPJ+2
+        u(i,J) = i/NPI*(U_IN/YMAX*(JinRight-JinLeft)) ...
+            *1.5*(1.0-(2.0*(y(J)-YMAX/2)/YMAX)^2); % Velocity in x-direction
     end
 end
+
 
 v(:,:)     = 0.;       % Velocity in y-direction
 p(:,:)     = 0.;       % Relative pressure

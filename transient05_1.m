@@ -15,18 +15,18 @@ clc
 %% declare all variables and contants
 % variables
 global x x_u y y_v u v pc T rho rho_old mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
-    u_old v_old pc_old T_old time Dt eps_old k_old uplus yplus yplus1 yplus2 f f_old
+    u_old v_old pc_old T_old time Dt eps_old k_old uplus yplus yplus1 yplus2 f f_old F_u F_v
 % constants
 global NPI NPJ XMAX YMAX XMM YMM DMM JinLeft JinRight LARGE U_IN SMALL Cmu sigmak sigmaeps C1eps C2eps kappa ERough Ti Sc Sct
 
 NPI        = 100;        % number of grid cells in x-direction [-]
 NPJ        = 100;        % number of grid cells in y-direction [-]
-XMAX       = 1.0;      % width of the domain [m]
-YMAX       = 1.0;       % height of the domain [m]
+XMAX       = 1.;      % width of the domain [m]
+YMAX       = 1.;       % height of the domain [m]
 XMM        = 0.05;      % width of marshmellow [m]
 YMM        = 0.05;      % height of marshmellow [m]
 DMM        = 0.20;      % distance of marshmellow to table [m]
-MAX_ITER   = 5;       % maximum number of outer iterations [-]
+MAX_ITER   = 10;       % maximum number of outer iterations [-]
 U_ITER     = 5;         % number of Newton iterations for u equation [-]
 V_ITER     = 5;         % number of Newton iterations for v equation [-]
 PC_ITER    = 30;        % number of Newton iterations for pc equation [-]
@@ -60,7 +60,7 @@ ERough     = 9.793;
 Ti         = 0.04;
 
 Dt         = 0.01;
-TOTAL_TIME = 7.;
+TOTAL_TIME = 5.;
 
 %% start main function here
 init(); % initialization
@@ -253,9 +253,11 @@ quiver(x,y,u',v');
 ShowArrowHead = 'off';
 Marker = '.';
 title('velocity field')
+
 figure(2)
 pcolor(x,y,f');
 title('mass fraction')
+
 figure(3)
 hold on
 plot(y/YMAX,-u(2,:))
@@ -265,6 +267,7 @@ plot(x/XMAX,-v(:,2))
 legend('inlet left','outlet top','outlet right', 'outlet bottom')
 title('outlet velocity to outside of domain')
 hold off
+
 figure(4)
 pcolor(x,y,T');
 title('temperature profile')
