@@ -92,9 +92,9 @@ end
 u(3:NPI,NPJ+2) = u(3:NPI,NPJ+1);
 for i = 3:NPI
     if v(i,NPJ+2) > 0
-        v(i,NPJ+2) = v(i,NPJ+1) * m_in / m_out;
-    else
         v(i,NPJ+2) = v(i,NPJ+1);
+    else
+        v(i,NPJ+2) = v(i,NPJ+1) * m_out / m_in;
     end
 end
 u(NPI+1,NPJ+2) = 0;
@@ -102,12 +102,14 @@ v(NPI+1,NPJ+2) = 0;
 %Oulet right
 for j = 2:NPJ+1
     if u(NPI+2) > 0
-        u(NPI+2,j) = u(NPI+1,j) * m_in / m_out;
-    else
         u(NPI+2,j) = u(NPI+1,j);
+    else
+        u(NPI+2,j) = u(NPI+1,j) * m_out / m_in;
     end
 end
 v(NPI+2,2:NPJ+1) = v(NPI+1,2:NPJ+1);
+u(NPI+2,NPJ+1) = 0;
+v(NPI+2,NPJ+1) = 0;
 % Outlet bottom
 u(3:NPI,2) = 0*u(3:NPI,3);
 v(3:NPI,2) = 0*v(3:NPI,3) * m_in / m_out;
