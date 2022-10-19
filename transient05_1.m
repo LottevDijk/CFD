@@ -15,14 +15,14 @@ clc
 %% declare all variables and contants
 % variables
 global x x_u y y_v u v pc T rho rho_old mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
-    u_old v_old pc_old T_old time Dt eps_old k_old uplus yplus yplus1 yplus2 f f_old F_u F_v
+    u_old v_old pc_old T_old time Dt eps_old k_old uplus yplus yplus1 yplus2 f f_old F_u F_v m_in m_out
 % constants
 global NPI NPJ XMAX YMAX XMM YMM DMM JinLeft JinRight LARGE U_IN SMALL Cmu sigmak sigmaeps C1eps C2eps kappa ERough Ti Sc Sct
 
-NPI        = 100;        % number of grid cells in x-direction [-]
-NPJ        = 100;        % number of grid cells in y-direction [-]
-XMAX       = 1.;      % width of the domain [m]
-YMAX       = 1.;       % height of the domain [m]
+NPI        = 80;        % number of grid cells in x-direction [-]
+NPJ        = 80;        % number of grid cells in y-direction [-]
+XMAX       = 2.;      % width of the domain [m]
+YMAX       = 2.;       % height of the domain [m]
 XMM        = 0.05;      % width of marshmellow [m]
 YMM        = 0.05;      % height of marshmellow [m]
 DMM        = 0.20;      % distance of marshmellow to table [m]
@@ -40,8 +40,8 @@ LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
 U_IN       = 0.4;       % in flow velocity [m/s]
-JinLeft    = 0.45;       % relative location left side inlet
-JinRight   = 0.55;       % relative location right side inlet
+JinLeft    = 0.47;       % relative location left side inlet
+JinRight   = 0.53;       % relative location right side inlet
 
 s          = 0.5;       % Stoichiometric ratio of chemical reaction [-]
 mox_0      = 1.0;       % Mass fraction oxygen in air inlet stream [-]
@@ -59,7 +59,7 @@ kappa      = 0.4187;
 ERough     = 9.793;
 Ti         = 0.04;
 
-Dt         = 0.01;
+Dt         = 0.05;
 TOTAL_TIME = 5.;
 
 %% start main function here
@@ -146,20 +146,22 @@ for time = Dt:Dt:TOTAL_TIME
     % end: printConv(time, iter)===========================================
     
     %Make snaps allong time
-if mod(time,.5) <= 0.01 
+if mod(time,.5) <= Dt 
     Frame = figure (1)
 %     pcolor(x,y,Alpha');
 %     colorbar;
     quiver(x,y,u',v');
-    fileLocation = "D:\MW courses\1 - 4RM00 - Introduction to computational fluid dynamics\solution_wc6";
-    fileName = sprintf('image%d.png',time);
-    plotName = strcat(fileLocation,fileName); 
-    print(Frame,plotName,'-dpng','-r200');  % Save as png file (raster format) '-r200' controls its resolution
+    %fileLocation = "D:\MW courses\1 - 4RM00 - Introduction to computational fluid dynamics\solution_wc6";
+    %fileName = sprintf('image%d.png',time);
+    %plotName = strcat(fileLocation,fileName); 
+    %print(Frame,plotName,'-dpng','-r200');  % Save as png file (raster format) '-r200' controls its resolution
 end
     
     % reset SMAX and SAVG
     SMAX = LARGE;
     SAVG = LARGE;   
+    m_in
+    m_out
 end % end of calculation
 
 %% determine mass fraction of three components according to SCRS model 
