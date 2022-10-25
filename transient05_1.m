@@ -14,18 +14,18 @@ close all
 clc
 %% declare all variables and contants
 % variables
-global x x_u y y_v u v pc T rho rho_old mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
-    u_old v_old pc_old T_old time Dt eps_old k_old uplus yplus yplus1 yplus2 f f_old F_u F_v m_in m_out
+global x x_u y y_v u v p pc T rho rho_old mu Gamma b SMAX SAVG aP aE aW aN aS eps k...
+    u_old v_old p_old pc_old T_old time Dt eps_old k_old uplus yplus yplus1 yplus2 f f_old F_u F_v m_in m_out m_outb m_outr m_outt
 % constants
-global NPI NPJ XMAX YMAX XMM YMM DMM JinLeft JinRight LARGE U_IN SMALL Cmu sigmak sigmaeps C1eps C2eps kappa ERough Ti Sc Sct
+global NPI NPJ XMAX YMAX XMM YMM DMM JinLeft JinRight LARGE U_IN P_ATM SMALL Cmu sigmak sigmaeps C1eps C2eps kappa ERough Ti Sc Sct
 
-NPI        = 80;        % number of grid cells in x-direction [-]
-NPJ        = 80;        % number of grid cells in y-direction [-]
-XMAX       = 2.;      % width of the domain [m]
-YMAX       = 2.;       % height of the domain [m]
+NPI        = 160;        % number of grid cells in x-direction [-]
+NPJ        = 160;        % number of grid cells in y-direction [-]
+XMAX       = 3.0;      % width of the domain [m]
+YMAX       = 3.0;       % height of the domain [m]
 XMM        = 0.05;      % width of marshmellow [m]
 YMM        = 0.05;      % height of marshmellow [m]
-DMM        = 0.20;      % distance of marshmellow to table [m]
+DMM        = 0.30;      % distance of marshmellow to table [m]
 MAX_ITER   = 10;       % maximum number of outer iterations [-]
 U_ITER     = 5;         % number of Newton iterations for u equation [-]
 V_ITER     = 5;         % number of Newton iterations for v equation [-]
@@ -39,9 +39,10 @@ SAVGneeded = 1E-9;      % maximum accepted average error in mass balance [kg/s]
 LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
-U_IN       = 0.4;       % in flow velocity [m/s]
-JinLeft    = 0.47;       % relative location left side inlet
-JinRight   = 0.53;       % relative location right side inlet
+U_IN       = 0.30;       % in flow velocity [m/s]
+Dinlet     = 0.05;       % diameter of the fuel inlet[m]
+JinLeft    = (0.5*YMAX - 0.5*Dinlet)/YMAX;       % relative location left side inlet
+JinRight   = (0.5*YMAX + 0.5*Dinlet)/YMAX;       % relative location right side inlet
 
 s          = 0.5;       % Stoichiometric ratio of chemical reaction [-]
 mox_0      = 1.0;       % Mass fraction oxygen in air inlet stream [-]
@@ -144,13 +145,14 @@ for time = Dt:Dt:TOTAL_TIME
         time,u(ceil(3*(NPI+1)/10),ceil(2*(NPJ+1)/5)),v(ceil(3*(NPI+1)/10),ceil(2*(NPJ+1)/5)),...
         T(ceil(3*(NPI+1)/10),ceil(2*(NPJ+1)/5)), f(ceil(3*(NPI+1)/10),ceil(2*(NPJ+1)/5)), SMAX, SAVG);
     % end: printConv(time, iter)===========================================
-    
+
     %Make snaps allong time
-if mod(time,.5) <= Dt 
-    Frame = figure (1)
-%     pcolor(x,y,Alpha');
-%     colorbar;
+if mod(time,Dt*10) <= Dt 
+    figure(1)
     quiver(x,y,u',v');
+    figure (2)
+    pcolor(x,y,p');
+    colorbar;
     %fileLocation = "D:\MW courses\1 - 4RM00 - Introduction to computational fluid dynamics\solution_wc6";
     %fileName = sprintf('image%d.png',time);
     %plotName = strcat(fileLocation,fileName); 

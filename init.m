@@ -2,10 +2,10 @@ function [] = init()
 % Purpose: To initilise all parameters.
 
 % constants
-global NPI NPJ LARGE U_IN XMAX YMAX XMM YMM DMM JinLeft JinRight
+global NPI NPJ LARGE U_IN XMAX YMAX XMM YMM DMM JinLeft JinRight P_ATM
 % variables
 global x x_u y y_v u v pc p T rho mu mut mueff Gamma Cp k eps delta E E2 yplus yplus1 ...
-    yplus2 uplus tw b SP Su d_u d_v omega SMAX SAVG m_in m_out relax_u relax_v ...
+    yplus2 uplus tw b SP Su d_u d_v omega SMAX SAVG SMALL m_in m_out m_outb m_outr m_outt relax_u relax_v ...
     relax_pc relax_T aP aE aW aN aS F_u F_v u_old v_old pc_old T_old rho_old k_old ...
     eps_old dudx dudy dvdx dvdy f f_old relax_f Diff
 
@@ -122,14 +122,13 @@ m_out = 1.;
 
 for i = 2: NPI+2
     for J = 2:NPJ+2
-        u(i,J) = i/NPI*(U_IN/YMAX*(JinRight-JinLeft)) ...
+        u(i,J) = SMALL * i/NPI*(U_IN/YMAX*(JinRight-JinLeft)) ...
             *1.5*(1.0-(2.0*(y(J)-YMAX/2)/YMAX)^2); % Velocity in x-direction
+        v(i,J) = SMALL;
     end
 end
 
-
-v(:,:)     = 0.;       % Velocity in y-direction
-p(:,:)     = 0.;       % Relative pressure
+p(:,:)     = 0;       % Relative pressure
 T(:,:)     = 273.;     % Temperature
 rho(:,:)   = 1.0;      % Density
 mu(:,:)    = 2.E-5;    % Viscosity

@@ -4,7 +4,7 @@ function [] = bound()
 % constants
 global NPI NPJ U_IN XMAX YMAX XMM YMM DMM JinLeft JinRight Cmu Ti
 % variables
-global x y u v T rho m_in m_out m_outr m_outb m_outt x_u y_v F_u F_v k eps f time Dt
+global x y u v T p rho m_in m_out m_outr m_outb m_outt x_u y_v F_u F_v k eps f time Dt
 
 % Set k and eps at the inlet
 k(1,1:NPJ+2)     = 1.5*(U_IN*Ti)^2; % at inlet
@@ -41,10 +41,12 @@ m_outb = 0;
 m_outt = 0;
 
             %Mass in left and right
-for J = 1:NPJ+1
+for J = 2:NPJ+1
     AREAw = y_v(J+1)-y_v(J);
             %Burner inlet
-    m_in = m_in + F_u(2,J)*AREAw;
+    if u (2,J) > 0
+        m_in = m_in + F_u(2,J)*AREAw;
+    end
             %Inlet right boundary
     if u(NPI+2,J) < 0
         m_in = m_in - F_u(NPI+2,J) * AREAw;
@@ -64,7 +66,10 @@ for I = 1:NPI+1
 end
 
             % mass out rightside
-for J = 1:NPJ+1
+for J = 2:NPJ+1
+    if u (2,J) < 0
+        m_out = m_out - F_u(2,J)*AREAw;
+    end
     if u(NPI+2,J) > 0
         m_outr = m_outr + F_u(NPI+1,J) * AREAw;
     end
@@ -83,42 +88,49 @@ end
 m_out = m_outr + m_outb + m_outt;
 
 if m_in > 10.0 || m_out > 10.0
+    m_in
+    m_out
     error('Alles gaat helemaal mis')
 end
 
 %% Outlet boundaries
 
 %Outlet top
-u(3:NPI,NPJ+2) = u(3:NPI,NPJ+1);
-for i = 3:NPI
-    if v(i,NPJ+2) > 0
-        v(i,NPJ+2) = v(i,NPJ+1);
+for i = 3:NPI+1
+    if v(i,NPJ+1) > 0
+        u(i,NPJ+2) = u(i,NPJ+1);
+        v(i,NPJ+2) = v(i,NPJ+1) * m_in / m_out;
     else
-        v(i,NPJ+2) = v(i,NPJ+1) * m_out / m_in;
+        u(i,NPJ+2) = u(i,NPJ+1);
+        v(i,NPJ+2) = 0.5*v(i,NPJ+1) * m_out/ m_in;
     end
 end
-u(NPI+1,NPJ+2) = 0;
-v(NPI+1,NPJ+2) = 0;
+% u(NPI-3:NPI+1,NPJ+2) = 0;
+% v(NPI-3:NPI+1,NPJ+2) = 0;
+
 %Oulet right
 for j = 2:NPJ+1
-    if u(NPI+2) > 0
-        u(NPI+2,j) = u(NPI+1,j);
+    if u(NPI+1,j) > 0
+        u(NPI+2,j) = 0*u(NPI+1,j) * m_in / m_out;
+        v(NPI+2,j) = 0*v(NPI+1,j);
     else
-        u(NPI+2,j) = u(NPI+1,j) * m_out / m_in;
+         u(NPI+2,j) = 0*u(NPI+1,j) * m_out / m_in;
+         v(NPI+2,j) = 0*v(NPI+1,j);
     end
 end
-v(NPI+2,2:NPJ+1) = v(NPI+1,2:NPJ+1);
-u(NPI+2,NPJ+1) = 0;
-v(NPI+2,NPJ+1) = 0;
 % Outlet bottom
-u(3:NPI,2) = 0*u(3:NPI,3);
-v(3:NPI,2) = 0*v(3:NPI,3) * m_in / m_out;
-u(NPI+1,2) = 0;
-v(NPI+1,2) = 0;
+for i = 3:NPI+1
+    if v(i,3) < 0
+        u(i,2) = u(i,3);
+        v(i,2) = v(i,3) * m_in / m_out;
+    else
+        u(i,2) = u(i,3);
+        v(i,2) = 0.5*v(i,3) * m_out / m_in; 
+    end
+% u(NPI-3:NPI+1,2) = 0;
+% v(NPI-3:NPI+1,2) = 0;
 
-
-
-
+p(2:NPI+2,[1 NPJ+2]) = 0;
 k(NPI+2,2:NPJ+1) = k(NPI+1,2:NPJ+1);
 eps(NPI+2,2:NPJ+1) = eps(NPI+1,2:NPJ+1);
 T(NPI+2,1:NPJ+2) = T(NPI+1,1:NPJ+2);

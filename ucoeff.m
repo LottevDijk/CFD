@@ -42,15 +42,15 @@ for I = Istart:Iend
         mus = 0.25*(mueff(I-1,J) + mueff(I,J) + mueff(I-1,J-1) + mueff(I,J-1));
         mun = 0.25*(mueff(I-1,J+1) + mueff(I,J+1) + mueff(I-1,J) + mueff(I,J));
         
-        if J==2 || J==NPJ+1
-            if yplus(I,J) < 11.63
-                SP(i,J) = -mu(I,J)*AREAs/(0.5*AREAw);
-            else
-                SP(i,J) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;
-            end
-        else
-            SP(i,J) = 0.;
-        end
+%         if J==2 || J==NPJ+1
+%             if yplus(I,J) < 11.63
+%                 SP(i,J) = -mu(I,J)*AREAs/(0.5*AREAw);
+%             else
+%                 SP(i,J) = -rho(I,J) * Cmu^0.25 * k(I,J)^0.5 / uplus(I,J) *AREAs;
+%             end
+%         else
+%             SP(i,J) = 0.;
+%         end
         
         Su(i,J) = (mueff(I,J)*dudx(I,J) - mueff(I-1,J)*dudx(I-1,J)) / (x(I) - x(I-1)) + ...
             (mun*dvdx(i,j+1) - mus*dvdx(i,j)) / (y_v(j+1) - y_v(j));
