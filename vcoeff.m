@@ -46,6 +46,7 @@ for I = Istart:Iend
             (mue*dudy(i+1,j) - muw*dudy(i,j)) / (x_u(i+1) - x_u(i));
         Su(i,J) =  Su(i,J)*AREAw*AREAs;
         
+        %marshmellow placement
         if any(i == round(DMM/XMAX*NPI) : round((DMM+XMM)/XMAX*NPI))
             if any(J == round((YMAX/2-YMM/2)/YMAX*NPJ):round((YMAX/2+YMM/2)/YMAX*NPJ))
                 SP(i,J) = -LARGE;

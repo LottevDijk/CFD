@@ -2,7 +2,7 @@ function [] = fcoeff()
 % Purpose: To calculate the coefficients for the f equation.
 
 % constants
-global NPI NPJ Dt Sc Sct
+global NPI NPJ XMAX YMAX XMM YMM DMM Dt Sc Sct LARGE
 % variables
 global x x_u y y_v SP Su F_u F_v  rho Istart Iend ...
     Jstart Jend b aE aW aN aS aP f f_old relax_f mut mu
@@ -50,6 +50,14 @@ for I = Istart:Iend
         % The source terms
         SP(I,J) = 0.;
         Su(I,J) = 0.;
+        
+        %marshmellow placement
+        if any(i == round(DMM/XMAX*NPI) : round((DMM+XMM)/XMAX*NPI))
+            if any(J == round((YMAX/2-YMM/2)/YMAX*NPJ):round((YMAX/2+YMM/2)/YMAX*NPJ))
+                SP(i,J) = -LARGE;
+                Su(i,J) = 0;
+            end
+        end
         
         % The coefficients (hybrid differencing scheme)
         aW(I,j) = max([ Fw, Dw + Fw/2, 0.]);

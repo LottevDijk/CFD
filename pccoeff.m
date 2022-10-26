@@ -35,6 +35,14 @@ for I = Istart:Iend
         SP(I,J) = 0.;
         Su(I,J) = 0.;
         
+        %marshmellow placement
+        if any(i == round(DMM/XMAX*NPI) : round((DMM+XMM)/XMAX*NPI))
+            if any(J == round((YMAX/2-YMM/2)/YMAX*NPJ):round((YMAX/2+YMM/2)/YMAX*NPJ))
+                SP(i,J) = -LARGE;
+                Su(i,J) = 0;
+            end
+        end
+        
         b(I,J) = b(I,J) + Su(I,J);
         
         SMAX = max([SMAX,abs(b(I,J))]);

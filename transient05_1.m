@@ -21,8 +21,8 @@ global NPI NPJ XMAX YMAX XMM YMM DMM JinLeft JinRight LARGE U_IN P_ATM SMALL Cmu
 
 NPI        = 160;        % number of grid cells in x-direction [-]
 NPJ        = 160;        % number of grid cells in y-direction [-]
-XMAX       = 3.0;      % width of the domain [m]
-YMAX       = 3.0;       % height of the domain [m]
+XMAX       = 1.0;      % width of the domain [m]
+YMAX       = 1.0;       % height of the domain [m]
 XMM        = 0.05;      % width of marshmellow [m]
 YMM        = 0.05;      % height of marshmellow [m]
 DMM        = 0.30;      % distance of marshmellow to table [m]
@@ -40,13 +40,14 @@ LARGE      = 1E30;      % arbitrary very large value [-]
 SMALL      = 1E-30;     % arbitrary very small value [-]
 P_ATM      = 101000.;   % athmospheric pressure [Pa]
 U_IN       = 0.30;       % in flow velocity [m/s]
-Dinlet     = 0.05;       % diameter of the fuel inlet[m]
+Dinlet     = 1.01;       % diameter of the fuel inlet[m]
 JinLeft    = (0.5*YMAX - 0.5*Dinlet)/YMAX;       % relative location left side inlet
 JinRight   = (0.5*YMAX + 0.5*Dinlet)/YMAX;       % relative location right side inlet
 
 s          = 0.5;       % Stoichiometric ratio of chemical reaction [-]
 mox_0      = 1.0;       % Mass fraction oxygen in air inlet stream [-]
 mfu_1      = 1.0;       % Mass fraction fuel in fuel inlet stream [-]
+mni_0      = 0.0;
 fst        = mox_0/(s*mfu_1+mox_0); % Stoichiometric mixture fraction
 Sc         = 0.1181;    % Schmidt number
 Sct        = 0.5;       % turbulent Schmidt number
@@ -93,21 +94,21 @@ for time = Dt:Dt:TOTAL_TIME
         
         velcorr(); % Correct pressure and velocity
 % comment out turbulent model since we are solving laminar flame        
-%         kcoeff();
-%         for iter_k = 1:K_ITER
-%             k = solve(k, b, aE, aW, aN, aS, aP);
-%         end
-%         
-%         epscoeff();
-%         for iter_eps = 1:EPS_ITER
-%             eps = solve(eps, b, aE, aW, aN, aS, aP);
-%         end
+        kcoeff();
+        for iter_k = 1:K_ITER
+            k = solve(k, b, aE, aW, aN, aS, aP);
+        end
+        
+        epscoeff();
+        for iter_eps = 1:EPS_ITER
+            eps = solve(eps, b, aE, aW, aN, aS, aP);
+        end
         
         % Solve mixture fraction equation
-%         fcoeff();
-%         for iter_f = 1:F_ITER
-%             f = solve(f, b, aE, aW, aN, aS, aP);     
-%         end
+        fcoeff();
+        for iter_f = 1:F_ITER
+            f = solve(f, b, aE, aW, aN, aS, aP);     
+        end
         
 %         Tcoeff();
 %         for iter_T = 1:T_ITER
@@ -151,7 +152,7 @@ if mod(time,Dt*10) <= Dt
     figure(1)
     quiver(x,y,u',v');
     figure (2)
-    pcolor(x,y,p');
+    pcolor(x,y,f');
     colorbar;
     %fileLocation = "D:\MW courses\1 - 4RM00 - Introduction to computational fluid dynamics\solution_wc6";
     %fileName = sprintf('image%d.png',time);
@@ -162,29 +163,33 @@ end
     % reset SMAX and SAVG
     SMAX = LARGE;
     SAVG = LARGE;   
+    
+    format long
     m_in
     m_out
+    format
+    
 end % end of calculation
 
 %% determine mass fraction of three components according to SCRS model 
-% mox = zeros(NPI+2,NPJ+2);
-% mfu = zeros(NPI+2,NPJ+2);
-% mpr = zeros(NPI+2,NPJ+2);
-% mni = zeros(NPI+2,NPJ+2);
-%   for I = 1:NPI+2
-%                 for J = 1:NPJ+2
-%                     if f(I,J) < 1 && f(I,J) >= fst
-%                         mox(I,J) = 0;
-%                         mfu(I,J) = (f(I,J)-fst)/(1-fst)*mfu_1;
-%                     elseif f(I,J) > 0 && f(I,J) < fst
-%                         mfu(I,J) = 0;
-%                         mox(I,J) = ((fst - f(I,J))/fst)*mox_0;
-%                     end
-%                     
-%                     mni(I,J) = mni_0*(1-f(I,J));
-%                     mpr(I,J) = 1 - (mox(I,J) + mfu(I,J) + mni(I,J)); 
-%                 end
-%   end
+mox = zeros(NPI+2,NPJ+2);
+mfu = zeros(NPI+2,NPJ+2);
+mpr = zeros(NPI+2,NPJ+2);
+mni = zeros(NPI+2,NPJ+2);
+  for I = 1:NPI+2
+                for J = 1:NPJ+2
+                    if f(I,J) < 1 && f(I,J) >= fst
+                        mox(I,J) = 0;
+                        mfu(I,J) = (f(I,J)-fst)/(1-fst)*mfu_1;
+                    elseif f(I,J) > 0 && f(I,J) < fst
+                        mfu(I,J) = 0;
+                        mox(I,J) = ((fst - f(I,J))/fst)*mox_0;
+                    end
+                    
+                    mni(I,J) = mni_0*(1-f(I,J));
+                    mpr(I,J) = 1 - (mox(I,J) + mfu(I,J) + mni(I,J)); 
+                end
+  end
 %% begin: output()
 % Print all results in output.txt
 fp = fopen('output.txt','w');
@@ -260,7 +265,7 @@ title('velocity field')
 
 figure(2)
 pcolor(x,y,f');
-title('mass fraction')
+title('mixture fraction')
 
 figure(3)
 hold on

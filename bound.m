@@ -29,6 +29,7 @@ for J = 1:NPJ+2
 end
 for J = round(JinLeft*NPJ):round(JinRight*NPJ)
     u(2,J) = U_IN;
+    f(1,J) = 1.0;
 end
 
 %% Conservation of mass
@@ -131,7 +132,8 @@ for i = 3:NPI+1
 % v(NPI-3:NPI+1,2) = 0;
 
 p(2:NPI+2,[1 NPJ+2]) = 0;
-k(NPI+2,2:NPJ+1) = k(NPI+1,2:NPJ+1);
-eps(NPI+2,2:NPJ+1) = eps(NPI+1,2:NPJ+1);
-T(NPI+2,1:NPJ+2) = T(NPI+1,1:NPJ+2);
+f(2:NPI+2,[1 NPJ+2]) = 0;
+k(2:NPI+2,[1 NPJ+2]) = k(2:NPI+2,[2 NPJ+1]);
+eps(2:NPI+2,[1 NPJ+2]) = eps(2:NPI+2,[2 NPJ+1]);
+T(2:NPI+2,[1 NPJ+2]) = T(2:NPI+2,[2 NPJ+1]);
 end
